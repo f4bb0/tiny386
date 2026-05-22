@@ -17,6 +17,8 @@
 #define LCD_WIDTH 1024
 #define LCD_HEIGHT 600
 #define LCD_BL 20
+#define LCD_UPDN 26
+#define LCD_SHLR 27
 
 #define SD_CLK 43
 #define SD_CMD 44

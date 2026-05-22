@@ -97,8 +97,27 @@ static esp_err_t bsp_enable_backlight(void)
 	return ESP_OK;
 }
 
+static esp_err_t bsp_configure_panel_direction_pins(void)
+{
+	const gpio_config_t dir_cfg = {
+		.pin_bit_mask = (1ULL << LCD_UPDN) | (1ULL << LCD_SHLR),
+		.mode = GPIO_MODE_OUTPUT,
+		.pull_up_en = GPIO_PULLUP_DISABLE,
+		.pull_down_en = GPIO_PULLDOWN_DISABLE,
+		.intr_type = GPIO_INTR_DISABLE,
+	};
+
+	ESP_RETURN_ON_ERROR(gpio_config(&dir_cfg), TAG, "configure LCD direction pins");
+	ESP_RETURN_ON_ERROR(gpio_set_level(LCD_UPDN, 0), TAG, "set LCD_UPDN level");
+	ESP_RETURN_ON_ERROR(gpio_set_level(LCD_SHLR, 0), TAG, "set LCD_SHLR level");
+
+	return ESP_OK;
+}
+
 void vga_task(void *arg)
 {
+	ESP_ERROR_CHECK(bsp_configure_panel_direction_pins());
+
 	(void)arg;
 
 	int core_id = esp_cpu_get_core_id();
