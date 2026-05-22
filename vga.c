@@ -774,8 +774,8 @@ static void vga_text_refresh(VGAState *s,
     if (fb_dev->width < width1 || fb_dev->height < height1 ||
         width > MAX_TEXT_WIDTH || height > MAX_TEXT_HEIGHT || cheight > 16)
         return; /* not enough space */
-    x1 = (fb_dev->width - width1) / 2;
-    y1 = (fb_dev->height - height1) / 2;
+    x1 = 0;
+    y1 = 0;
     full_update = 1;
 #endif
 #else
@@ -1028,7 +1028,7 @@ static void vga_graphic_refresh(VGAState *s,
     int wx = fb_dev->width * 3 / 2;
     if (h < hx)
 #ifdef SWAPXY
-        i0 += (hx - h) / 3 * (BPP / 8);
+    i0 = 0;
 #else
         i0 += (hx - h) / 3 * fb_dev->stride;
 #endif
@@ -1036,7 +1036,7 @@ static void vga_graphic_refresh(VGAState *s,
         h = hx;
     if (w < wx)
 #ifdef SWAPXY
-        i0 += (wx - w) / 3 * fb_dev->stride;
+    i0 = 0;
 #else
         i0 += (wx - w) / 3 * (BPP / 8);
 #endif
@@ -1047,7 +1047,7 @@ static void vga_graphic_refresh(VGAState *s,
     int wx = fb_dev->width * 2;
     if (h < hx)
 #ifdef SWAPXY
-        i0 += (hx - h) / 4 * (BPP / 8);
+        i0 = 0;
 #else
         i0 += (hx - h) / 4 * fb_dev->stride;
 #endif
@@ -1055,7 +1055,7 @@ static void vga_graphic_refresh(VGAState *s,
         h = hx;
     if (w < wx)
 #ifdef SWAPXY
-        i0 += (wx - w) / 4 * fb_dev->stride;
+        i0 = 0;
 #else
         i0 += (wx - w) / 4 * (BPP / 8);
 #endif
@@ -1065,11 +1065,11 @@ static void vga_graphic_refresh(VGAState *s,
     int hx = fb_dev->height;
     int wx = fb_dev->width;
     if (h < hx)
-        i0 += (hx - h) / 2 * (BPP / 8);
+        i0 = 0;
     else
         h = hx;
     if (w < wx)
-        i0 += (wx - w) / 2 * fb_dev->stride;
+        i0 = 0;
     else
         w = wx;
 #endif
