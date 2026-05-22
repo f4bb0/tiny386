@@ -139,6 +139,7 @@ void vga_task(void *arg)
 
 	ESP_LOGI(TAG, "Install EK79007 panel driver");
 	esp_lcd_panel_handle_t panel_handle = NULL;
+
 	esp_lcd_dpi_panel_config_t dpi_config = {
 		.virtual_channel = 0,
 		.dpi_clk_src = MIPI_DSI_DPI_CLK_SRC_DEFAULT,
@@ -154,6 +155,7 @@ void vga_task(void *arg)
 			.vsync_back_porch = 23,
 			.vsync_front_porch = 12,
 		},
+
 #if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(6, 0, 0)
 		.pixel_format = LCD_COLOR_PIXEL_FORMAT_RGB565,
 		.flags = { .use_dma2d = true },

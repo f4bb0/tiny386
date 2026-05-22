@@ -148,6 +148,47 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 1.5.3
+  espressif/usb:
+    component_hash: 4f00ced5663505a368bafcb9bb6b2e4a5033cc5625b8f510755a75baadf4ff1d
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.4'
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    targets:
+    - esp32s2
+    - esp32s3
+    - esp32s31
+    - esp32p4
+    - esp32h4
+    - linux
+    version: 1.4.0
+  espressif/usb_host_hid:
+    component_hash: a6c5366f9b6d80b0d5f56d085d62941464512e0968b96c5877e76a80fcc23f13
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    - name: espressif/usb
+      registry_url: https://components.espressif.com
+      require: public
+      rules:
+      - if: idf_version >=6.0
+      - if: target not in ["linux"]
+      version: ^1.0.0
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    targets:
+    - esp32s2
+    - esp32s3
+    - esp32p4
+    - esp32h4
+    - esp32s31
+    - linux
+    version: 1.2.0
   espressif/wifi_remote_over_eppp:
     component_hash: 06d8bc15348bbd21f1390daace36ed5adcf6026c93c5b69decc55fa04df2711a
     dependencies:
@@ -174,7 +215,8 @@ direct_dependencies:
 - espressif/esp_lcd_st7701
 - espressif/esp_lcd_touch_gt911
 - espressif/esp_wifi_remote
+- espressif/usb_host_hid
 - idf
-manifest_hash: bebd3bdc794e3d53724c25c0d3c5fb74061347dca32f020a2889cd5e3af0b364
+manifest_hash: 0f7fc85aa9ebc6f1e4888ef7bfa97abd095f62e8fdb2f82bf6a42cd7ab77d30d
 target: esp32p4
 version: 3.0.0
