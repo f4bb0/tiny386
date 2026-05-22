@@ -43,17 +43,6 @@ void lcd_draw(int x_start, int y_start, int x_end, int y_end, void *src)
 		return;
 	}
 
-	if (x_start > x_end) {
-		int tmp = x_start;
-		x_start = x_end;
-		x_end = tmp;
-	}
-	if (y_start > y_end) {
-		int tmp = y_start;
-		y_start = y_end;
-		y_end = tmp;
-	}
-
 	if (x_start < 0)
 		x_start = 0;
 	if (y_start < 0)
