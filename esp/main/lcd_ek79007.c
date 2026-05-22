@@ -187,6 +187,10 @@ void vga_task(void *arg)
 	ESP_ERROR_CHECK(esp_lcd_new_panel_ek79007(mipi_dbi_io, &panel_config, &panel_handle));
 	ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
 	ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+
+	// ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(globals.panel, true));
+	// Not this code!
+	
 	ESP_ERROR_CHECK(bsp_enable_backlight());
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
