@@ -8,6 +8,7 @@
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include "driver/gpio.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_mipi_dsi.h"
 #include "esp_lcd_ek79007.h"
@@ -16,6 +17,10 @@
 #include "common.h"
 
 static const char *TAG = "lcd";
+
+#ifndef LCD_BL_ACTIVE_LEVEL
+#define LCD_BL_ACTIVE_LEVEL 1
+#endif
 
 /*
  * Uncomment these lines if you need a custom initialization sequence.
@@ -34,14 +39,39 @@ void pc_vga_step(void *o);
 
 void lcd_draw(int x_start, int y_start, int x_end, int y_end, void *src)
 {
-	if (globals.panel) {
-		ESP_ERROR_CHECK(
-			esp_lcd_panel_draw_bitmap(
-				globals.panel,
-				x_start, y_start,
-				x_end, y_end,
-				src));
+	if (!globals.panel || !src) {
+		return;
 	}
+
+	if (x_start > x_end) {
+		int tmp = x_start;
+		x_start = x_end;
+		x_end = tmp;
+	}
+	if (y_start > y_end) {
+		int tmp = y_start;
+		y_start = y_end;
+		y_end = tmp;
+	}
+
+	if (x_start < 0)
+		x_start = 0;
+	if (y_start < 0)
+		y_start = 0;
+	if (x_end > LCD_WIDTH)
+		x_end = LCD_WIDTH;
+	if (y_end > LCD_HEIGHT)
+		y_end = LCD_HEIGHT;
+	if (x_start >= x_end || y_start >= y_end) {
+		return;
+	}
+
+	ESP_ERROR_CHECK(
+		esp_lcd_panel_draw_bitmap(
+			globals.panel,
+			x_start, y_start,
+			x_end, y_end,
+			src));
 }
 
 static esp_err_t bsp_enable_dsi_phy_power(void)
@@ -56,6 +86,26 @@ static esp_err_t bsp_enable_dsi_phy_power(void)
 		.voltage_mv = 2500,
 	};
 	return esp_ldo_acquire_channel(&ldo_cfg, &phy_pwr_chan);
+}
+
+static esp_err_t bsp_enable_backlight(void)
+{
+#ifdef LCD_BL
+	const gpio_config_t bl_cfg = {
+		.pin_bit_mask = 1ULL << LCD_BL,
+		.mode = GPIO_MODE_OUTPUT,
+		.pull_up_en = GPIO_PULLUP_DISABLE,
+		.pull_down_en = GPIO_PULLDOWN_DISABLE,
+		.intr_type = GPIO_INTR_DISABLE,
+	};
+	ESP_RETURN_ON_ERROR(gpio_config(&bl_cfg), TAG, "configure LCD_BL");
+	ESP_RETURN_ON_ERROR(gpio_set_level(LCD_BL, LCD_BL_ACTIVE_LEVEL), TAG, "set LCD_BL level");
+	ESP_LOGI(TAG, "Backlight enabled on GPIO %d", LCD_BL);
+#else
+	ESP_LOGW(TAG, "LCD_BL is not defined, skip backlight GPIO control");
+#endif
+
+	return ESP_OK;
 }
 
 void vga_task(void *arg)
@@ -118,16 +168,19 @@ void vga_task(void *arg)
 		.reset_gpio_num = LCD_RST,
 		.rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
 		.bits_per_pixel = 16,
-        .flags.reset_active_high = 1, // ??????
+		.flags = {
+			.reset_active_high = 1,
+		},
 		.vendor_config = &vendor_config,
 	};
 
 	ESP_ERROR_CHECK(esp_lcd_new_panel_ek79007(mipi_dbi_io, &panel_config, &panel_handle));
 	ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
 	ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+	ESP_ERROR_CHECK(bsp_enable_backlight());
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
-    ESP_ERROR_CHECK(esp_lcd_dpi_panel_enable_dma2d(panel_handle));
+	ESP_ERROR_CHECK(esp_lcd_dpi_panel_enable_dma2d(panel_handle));
 	// esp_err_t dma2d_ret = esp_lcd_dpi_panel_enable_dma2d(panel_handle);
 	// if (dma2d_ret != ESP_OK) {
 	// 	ESP_LOGW(TAG, "DMA2D unavailable (%s), continuing without async memcpy", esp_err_to_name(dma2d_ret));
