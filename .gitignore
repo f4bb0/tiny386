@@ -3,3 +3,6 @@
 .depends
 fmopl.inc
 build
+*.project
+*.cproject
+*.launch

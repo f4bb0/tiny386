@@ -85,7 +85,7 @@ void vga_task(void *arg)
 		.virtual_channel = 0,
 		.dpi_clk_src = MIPI_DSI_DPI_CLK_SRC_DEFAULT,
 		.dpi_clock_freq_mhz = 52,
-		.num_fbs = 1,
+		.num_fbs = 2,
 		.video_timing = {
 			.h_size = LCD_WIDTH,
 			.v_size = LCD_HEIGHT,
@@ -118,16 +118,22 @@ void vga_task(void *arg)
 		.reset_gpio_num = LCD_RST,
 		.rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
 		.bits_per_pixel = 16,
+        .flags.reset_active_high = 1, // ??????
 		.vendor_config = &vendor_config,
 	};
 
 	ESP_ERROR_CHECK(esp_lcd_new_panel_ek79007(mipi_dbi_io, &panel_config, &panel_handle));
 	ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
 	ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
-	ESP_ERROR_CHECK(esp_lcd_dpi_panel_enable_dma2d(panel_handle));
+    ESP_ERROR_CHECK(esp_lcd_dpi_panel_enable_dma2d(panel_handle));
+	// esp_err_t dma2d_ret = esp_lcd_dpi_panel_enable_dma2d(panel_handle);
+	// if (dma2d_ret != ESP_OK) {
+	// 	ESP_LOGW(TAG, "DMA2D unavailable (%s), continuing without async memcpy", esp_err_to_name(dma2d_ret));
+	// }
 #endif
-	ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
+	//ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 
 	globals.panel = panel_handle;
 	xEventGroupSetBits(global_event_group, BIT1);

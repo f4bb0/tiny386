@@ -25,7 +25,7 @@ dependencies:
     rules:
     - if: idf_version >= 5.5
   espressif/esp_lcd_ek79007:
-    version: '*'
+    version: '==2.0.2'
     rules:
     - if: idf_version >= 6.0
   espressif/esp_lcd_touch_gt911: ^1

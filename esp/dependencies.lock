@@ -62,7 +62,7 @@ dependencies:
       type: service
     version: 2.1.0
   espressif/esp_lcd_ek79007:
-    component_hash: 8005700b7f10c7136b6e2a3f19a48f972aa1d13ed107ed298574e8d24d17ea83
+    component_hash: 7a0896e167d88b9fc368ac74b2e84774ec5b48cd9baa390896c4be255d900e2e
     dependencies:
     - name: espressif/cmake_utilities
       registry_url: https://components.espressif.com
@@ -76,7 +76,7 @@ dependencies:
       type: service
     targets:
     - esp32p4
-    version: 1.0.4
+    version: 2.0.2
   espressif/esp_lcd_st7701:
     component_hash: 3fb061112bfe5402dcf5e09ff7e7f5b09a96b9a3fdd81c59d69996626b4dbc2f
     dependencies:
@@ -175,6 +175,6 @@ direct_dependencies:
 - espressif/esp_lcd_touch_gt911
 - espressif/esp_wifi_remote
 - idf
-manifest_hash: f41937f286df3b4171409a2d263f9a02449f28536b025f507307e15843cf12d8
+manifest_hash: bebd3bdc794e3d53724c25c0d3c5fb74061347dca32f020a2889cd5e3af0b364
 target: esp32p4
 version: 3.0.0
